@@ -7,8 +7,10 @@ import com.example.gitusersassignment.usersearchscreen.datamodels.UserViewModel
 import com.example.gitusersassignment.usersearchscreen.repositories.UserScreenRepository
 import com.example.gitusersassignment.usersearchscreen.responsemodel.userdetail.toDetailViewModel
 import com.example.gitusersassignment.usersearchscreen.responsemodel.users.toViewModel
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onStart
 import javax.inject.Inject
@@ -24,6 +26,7 @@ class UserScreenProcessor @Inject constructor(private val githubUsersAPI: Github
             emit(Result.loading())
         }
 
+    @OptIn(FlowPreview::class)
     override suspend fun getGithubUserDetails(userName: String): Flow<Result<UserDetailViewModel>> =
         flow {
             emit(Result.success(githubUsersAPI.getGithubUserDetails(userName).toDetailViewModel()))
@@ -31,5 +34,5 @@ class UserScreenProcessor @Inject constructor(private val githubUsersAPI: Github
             emit(Result.error(it))
         }.onStart {
             emit(Result.loading())
-        }
+        }.debounce(1000L)
 }
