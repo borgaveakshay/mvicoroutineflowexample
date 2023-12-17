@@ -28,7 +28,7 @@ class RetrofitModule {
             val builder = chain.request().newBuilder()
             builder.apply {
                 addHeader("Accept", "application/vnd.github+json")
-                addHeader("auth", "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")
+                addHeader("auth", "")
                 addHeader("X-GitHub-Api-Version", "2022-11-28")
             }
             chain.proceed(builder.build())

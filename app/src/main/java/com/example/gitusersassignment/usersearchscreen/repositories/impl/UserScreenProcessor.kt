@@ -17,11 +17,7 @@ class UserScreenProcessor @Inject constructor(private val githubUsersAPI: Github
     UserScreenRepository {
     override suspend fun getGithubUsers(): Flow<Result<List<UserViewModel>>> =
         flow {
-            emit(
-                Result.success(
-                    githubUsersAPI.getGithubUsers().toViewModel()
-                )
-            )
+            emit(Result.success(githubUsersAPI.getGithubUsers().toViewModel()))
         }.catch {
             emit(Result.error(it))
         }.onStart {
