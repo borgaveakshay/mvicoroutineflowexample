@@ -1,10 +1,10 @@
 package com.example.gitusersassignment.usersearchscreen.ui
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,7 +12,13 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -20,6 +26,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -45,7 +52,6 @@ class MainActivity : ComponentActivity() {
                 UserScreenComponent()
             }
         }
-        setUpFlows()
         userScreenViewModel.setEvent(UserScreenContract.UserScreenEvent.GetUsersList)
     }
 
@@ -55,6 +61,7 @@ class MainActivity : ComponentActivity() {
         val searchTextState = remember { mutableStateOf(value = "") }
         val getUsersState =
             remember { mutableStateOf(UserScreenContract.UserScreenState.initialState) }
+        getUsers { state -> getUsersState.value = state }
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
@@ -64,25 +71,31 @@ class MainActivity : ComponentActivity() {
                 SearchComponent(searchTextState.value) { newSearchText ->
 
                 }
-
+                UserListComponent(usersViewState = getUsersState.value.usersViewState)
             }
         }
     }
 
     @Composable
     fun UserListItem(user: UserViewModel) {
-        Box(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(45.dp)
+                .height(100.dp)
+                .padding(10.dp)
         ) {
-            Row(modifier = Modifier.padding(20.dp)) {
+            Card(
+                shape = CircleShape,
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+
+            ) {
                 SubcomposeAsyncImage(
                     model = user.avatarUrl,
-                    loading = {
-                        CircularProgressIndicator()
-                    },
-                    contentDescription = "user avatar"
+                    contentDescription = "user avatar",
+                    modifier = Modifier
+                        .height(50.dp)
+                        .width(50.dp)
                 )
             }
         }
@@ -106,35 +119,54 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun UserListComponent(userList: List<UserViewModel>) {
+    fun UserListComponent(usersViewState: UserScreenContract.GetUsersViewState) {
+        val modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+        Surface(
+            modifier = modifier
+        ) {
+            when (usersViewState) {
+                UserScreenContract.GetUsersViewState.Loading -> {
+                    LoadingComponent(isLoading = true, modifier)
+                }
 
-    }
-
-    private fun setUpFlows():  {
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.CREATED) {
-                userScreenViewModel.uiState.collect { state ->
-                    when (state.usersViewState) {
-                        UserScreenContract.GetUsersViewState.Loading -> {
-                            Toast.makeText(
-                                this@MainActivity, "Getting user list", Toast.LENGTH_LONG
-                            ).show()
-                        }
-
-                        is UserScreenContract.GetUsersViewState.Success -> {
-                            Toast.makeText(
-                                this@MainActivity,
-                                "Received response successfully ${state.usersViewState.userViewModel?.size}",
-                                Toast.LENGTH_LONG
-                            ).show()
-                        }
-
-                        else -> {
-                            // Do nothing
+                is UserScreenContract.GetUsersViewState.Success -> {
+                    LoadingComponent(isLoading = false, modifier)
+                    usersViewState.userViewModel?.let { user ->
+                        LazyColumn(modifier = modifier) {
+                            items(user) {
+                                UserListItem(user = it)
+                                Divider(thickness = 2.dp)
+                            }
                         }
                     }
+                }
+
+                else -> { // Do nothing }
                 }
             }
         }
     }
+
+    @Composable
+    fun LoadingComponent(isLoading: Boolean, modifier: Modifier) {
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = modifier
+        ) {
+            CircularProgressIndicator(modifier = Modifier.alpha(if (isLoading) 1F else 0F))
+        }
+    }
+
+    private fun getUsers(usersResponse: (UserScreenContract.UserScreenState) -> Unit) =
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.CREATED) {
+                userScreenViewModel.uiState.collect { state ->
+                    usersResponse(state)
+                }
+            }
+        }
+
 }
