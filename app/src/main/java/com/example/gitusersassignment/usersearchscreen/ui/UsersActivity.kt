@@ -20,6 +20,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -69,7 +70,7 @@ class MainActivity : ComponentActivity() {
         ) {
             Column {
                 SearchComponent(searchTextState.value) { newSearchText ->
-
+                    searchTextState.value = newSearchText
                 }
                 UserListComponent(usersViewState = getUsersState.value.usersViewState)
             }
@@ -98,6 +99,12 @@ class MainActivity : ComponentActivity() {
                         .width(50.dp)
                 )
             }
+            Text(
+                text = user.userName,
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .padding(start = 30.dp)
+            )
         }
     }
 
@@ -110,6 +117,7 @@ class MainActivity : ComponentActivity() {
             TextField(
                 value = searchText,
                 onValueChange = { onValueChanged(it) },
+                label = { Text(text = "Search Users") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp)
