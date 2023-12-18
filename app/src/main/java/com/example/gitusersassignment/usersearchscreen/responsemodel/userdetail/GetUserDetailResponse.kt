@@ -2,6 +2,7 @@ package com.example.gitusersassignment.usersearchscreen.responsemodel.userdetail
 
 
 import com.example.gitusersassignment.usersearchscreen.datamodels.UserDetailViewModel
+import com.example.gitusersassignment.usersearchscreen.datamodels.UserViewModel
 import com.google.gson.annotations.SerializedName
 
 data class GetUserDetailResponse(
@@ -83,5 +84,10 @@ fun GetUserDetailResponse.toDetailViewModel(): UserDetailViewModel = UserDetailV
     name = this.name,
     publicRepos = this.publicRepos,
     twitterUsername = this.twitterUsername
+)
+
+fun UserDetailViewModel.toUserViewModel() = UserViewModel(
+    userName = name,
+    avatarUrl = avatarUrl
 )
 

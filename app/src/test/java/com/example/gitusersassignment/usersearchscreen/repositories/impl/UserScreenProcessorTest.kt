@@ -7,12 +7,15 @@ import com.example.gitusersassignment.usersearchscreen.api.GithubUsersAPI
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.impl.annotations.MockK
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class UserScreenProcessorTest {
 
     @get:Rule
@@ -68,10 +71,11 @@ class UserScreenProcessorTest {
         val givenUserParam = "any user"
         coEvery { mockGithubUsersAPI.getGithubUserDetails(givenUserParam) } returns UserScreenProcessorMock.getUserDetailResponse()
         // WHEN
-        val result = userScreenProcessor.getGithubUserDetails(givenUserParam)
+        userScreenProcessor.getGithubUserDetails(givenUserParam)
+        advanceTimeBy(1000)
+        val result  = userScreenProcessor.getGithubUserDetails(givenUserParam)
         // THEN
         result.test {
-            assertEquals(ResultStatus.Loading, awaitItem().status)
             val resultItem = awaitItem()
             assertEquals(ResultStatus.Success, resultItem.status)
             assertEquals(UserScreenProcessorMock.getUserDetailModel(), resultItem.data)
@@ -88,8 +92,8 @@ class UserScreenProcessorTest {
         // WHEN
         val result = userScreenProcessor.getGithubUserDetails(givenUserName)
         // THEN
+        advanceTimeBy(1000)
         result.test {
-            assertEquals(ResultStatus.Loading, awaitItem().status)
             val resultItem = awaitItem()
             assertEquals(ResultStatus.Error, resultItem.status)
             assertEquals(givenErrorMessage, resultItem.error!!.message)

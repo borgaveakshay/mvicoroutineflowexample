@@ -3,6 +3,9 @@ package com.example.gitusersassignment.usersearchscreen.ui
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.gitusersassignment.ui.theme.GitUsersAssignmentTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -13,7 +16,15 @@ class MainActivity : ComponentActivity() {
         setContent {
             GitUsersAssignmentTheme {
                 // A surface container using the 'background' color from the theme
-                UserScreenComponent()
+                val navController = rememberNavController()
+                NavHost(navController = navController, startDestination = "Users screen") {
+                    composable("Users Screen") {
+                        UserScreenComponent(navController = navController)
+                    }
+                    composable("User Details") {
+                        UserDetailsScreen()
+                    }
+                }
             }
         }
     }

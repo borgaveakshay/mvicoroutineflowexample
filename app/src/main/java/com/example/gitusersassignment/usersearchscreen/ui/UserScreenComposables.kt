@@ -1,5 +1,6 @@
 package com.example.gitusersassignment.usersearchscreen.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,23 +26,24 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import coil.compose.SubcomposeAsyncImage
 import com.example.gitusersassignment.usersearchscreen.contracts.UserScreenContract
 import com.example.gitusersassignment.usersearchscreen.datamodels.UserViewModel
 import com.example.gitusersassignment.usersearchscreen.viewmodels.UserScreenViewModel
 
-@Preview
 @Composable
 fun UserScreenComponent(
-    viewModel: UserScreenViewModel = hiltViewModel()
+    viewModel: UserScreenViewModel = hiltViewModel(),
+    navController: NavController
 ) {
     val searchTextState = remember { mutableStateOf(value = "") }
     val userScreenState by viewModel.uiState.collectAsStateWithLifecycle()
-    viewModel.setEvent(UserScreenContract.UserScreenEvent.GetUsersList)
+    if (userScreenState.usersViewState is UserScreenContract.GetUsersViewState.Idle)
+        viewModel.setEvent(UserScreenContract.UserScreenEvent.GetUsersList)
     val modifier = Modifier
         .fillMaxWidth()
         .fillMaxHeight()
@@ -51,19 +53,32 @@ fun UserScreenComponent(
         Column {
             SearchComponent(searchTextState.value) { newSearchText ->
                 searchTextState.value = newSearchText
+                when {
+                    newSearchText.length > 1 -> {
+                        viewModel.setEvent(
+                            UserScreenContract.UserScreenEvent.GetUserDetails(
+                                newSearchText
+                            )
+                        )
+                    }
+                }
             }
-            UserListComponent(usersViewState = userScreenState.usersViewState)
+            UserListComponent(usersViewState = userScreenState.usersViewState, navController)
         }
     }
 }
 
 @Composable
-fun UserListItem(user: UserViewModel) {
+fun UserListItem(user: UserViewModel, modifier: Modifier, navController: NavController) {
     Row(
-        modifier = Modifier
+        modifier = modifier
+            .clickable {
+                navController.navigate("User Details")
+            }
             .fillMaxWidth()
             .height(100.dp)
             .padding(10.dp)
+
     ) {
         Card(
             shape = CircleShape,
@@ -107,7 +122,10 @@ fun SearchComponent(searchText: String, onValueChanged: (newValue: String) -> Un
 }
 
 @Composable
-fun UserListComponent(usersViewState: UserScreenContract.GetUsersViewState) {
+fun UserListComponent(
+    usersViewState: UserScreenContract.GetUsersViewState,
+    navController: NavController
+) {
     val modifier = Modifier
         .fillMaxWidth()
         .fillMaxHeight()
@@ -124,7 +142,7 @@ fun UserListComponent(usersViewState: UserScreenContract.GetUsersViewState) {
                 usersViewState.userViewModel?.let { user ->
                     LazyColumn(modifier = modifier) {
                         items(user) {
-                            UserListItem(user = it)
+                            UserListItem(user = it, modifier, navController = navController)
                             Divider(thickness = 2.dp)
                         }
                     }
