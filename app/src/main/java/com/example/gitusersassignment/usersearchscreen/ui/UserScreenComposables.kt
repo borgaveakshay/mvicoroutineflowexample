@@ -1,5 +1,6 @@
 package com.example.gitusersassignment.usersearchscreen.ui
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,13 +27,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil.compose.SubcomposeAsyncImage
+import com.example.gitusersassignment.R
 import com.example.gitusersassignment.usersearchscreen.contracts.UserScreenContract
 import com.example.gitusersassignment.usersearchscreen.datamodels.UserViewModel
+import com.example.gitusersassignment.usersearchscreen.responsemodel.userdetail.toUserViewModel
 import com.example.gitusersassignment.usersearchscreen.viewmodels.UserScreenViewModel
 
 @Composable
@@ -63,7 +67,62 @@ fun UserScreenComponent(
                     }
                 }
             }
-            UserListComponent(usersViewState = userScreenState.usersViewState, navController)
+            if (searchTextState.value.isEmpty())
+                UserListComponent(usersViewState = userScreenState.usersViewState, navController)
+            else
+                GetUserDetailsComponent(
+                    userDetailViewState = userScreenState.userDetailViewState,
+                    modifier = modifier,
+                    navController = navController
+                )
+        }
+    }
+}
+
+@Composable
+fun GetUserDetailsComponent(
+    userDetailViewState: UserScreenContract.GetUserDetailViewState,
+    modifier: Modifier,
+    navController: NavController
+) {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(100.dp)
+    ) {
+
+        when (userDetailViewState) {
+            is UserScreenContract.GetUserDetailViewState.Error -> LoadingComponent(
+                isLoading = false,
+                modifier = modifier
+            )
+
+            UserScreenContract.GetUserDetailViewState.Idle -> LoadingComponent(
+                isLoading = false,
+                modifier = modifier
+            )
+
+            UserScreenContract.GetUserDetailViewState.Loading -> LoadingComponent(
+                isLoading = true,
+                modifier = modifier
+            )
+
+            is UserScreenContract.GetUserDetailViewState.Success -> {
+                LoadingComponent(
+                    isLoading = false,
+                    modifier = modifier
+                )
+                userDetailViewState.userDetailViewModel?.let { userDetailViewModel ->
+                    val userViewModel = userDetailViewModel.toUserViewModel()
+                    Column {
+                        UserListItem(
+                            user = userViewModel,
+                            modifier = modifier,
+                            navController = navController
+                        )
+                    }
+                }
+            }
         }
     }
 }
@@ -91,7 +150,13 @@ fun UserListItem(user: UserViewModel, modifier: Modifier, navController: NavCont
                 contentDescription = "user avatar",
                 modifier = Modifier
                     .height(50.dp)
-                    .width(50.dp)
+                    .width(50.dp),
+                loading = {
+                    Image(
+                        painter = painterResource(id = R.drawable.profile_icon_placeholder),
+                        contentDescription = "loading placeholder"
+                    )
+                }
             )
         }
         Text(

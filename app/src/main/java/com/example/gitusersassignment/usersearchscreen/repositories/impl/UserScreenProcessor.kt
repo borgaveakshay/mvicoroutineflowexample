@@ -34,5 +34,5 @@ class UserScreenProcessor @Inject constructor(private val githubUsersAPI: Github
             emit(Result.error(it))
         }.onStart {
             emit(Result.loading())
-        }.debounce(1000L)
+        }
 }
