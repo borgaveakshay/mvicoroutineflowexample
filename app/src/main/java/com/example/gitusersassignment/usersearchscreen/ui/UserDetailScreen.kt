@@ -1,17 +1,16 @@
 package com.example.gitusersassignment.usersearchscreen.ui
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
@@ -23,6 +22,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
@@ -45,10 +45,10 @@ fun UserDetailsScreen(
 ) {
     val state by userScreenViewModel.uiState.collectAsStateWithLifecycle()
     userScreenViewModel.setEvent(UserScreenContract.UserScreenEvent.GetUserDetails(searchQuery))
-    val modifier = Modifier
+
+    Scaffold(modifier = Modifier
         .fillMaxWidth()
-        .fillMaxHeight()
-    Scaffold(modifier = modifier,
+        .fillMaxHeight(),
         topBar = {
             TopAppBar(
                 colors = topAppBarColors(
@@ -61,14 +61,14 @@ fun UserDetailsScreen(
             )
         }) { innerPadding ->
         Column(
-            modifier = modifier.padding(innerPadding),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            modifier = Modifier.padding(innerPadding),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            ProfileDetailsStateComposable(
+                userDetailViewState = state.userDetailViewState,
+                modifier = Modifier
+            )
         }
-        ProfileDetailsStateComposable(
-            userDetailViewState = state.userDetailViewState,
-            modifier = modifier
-        )
     }
 }
 
@@ -78,11 +78,11 @@ fun ProfileDetailsStateComposable(
     userDetailViewState: UserScreenContract.GetUserDetailViewState,
     modifier: Modifier
 ) {
-
     Column(
         modifier = modifier
-            .height(200.dp)
-            .background(MaterialTheme.colorScheme.onPrimary)
+            .fillMaxWidth()
+            .fillMaxHeight(),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         when (userDetailViewState) {
             is UserScreenContract.GetUserDetailViewState.Error -> LoadingComponent(
@@ -139,36 +139,38 @@ fun ProfileDetails(userDetailViewModel: UserDetailViewModel, modifier: Modifier)
     )
 
     userDetailViewModel.location?.let {
-        Spacer(modifier = modifier.height(5.dp))
-        ImageAndTextComposable(
-            imageResourceId = R.drawable.location_icon,
-            text = it,
-            modifier = modifier
-        )
+        if (it.isNotEmpty()) {
+            Spacer(modifier = modifier.height(5.dp))
+            ImageAndTextComposable(
+                imageResourceId = R.drawable.location_icon,
+                text = it
+            )
+        }
     }
     userDetailViewModel.twitterUsername?.let {
-        Spacer(modifier = modifier.height(5.dp))
-        ImageAndTextComposable(
-            imageResourceId = R.drawable.x_logo_twitter,
-            text = it,
-            modifier = modifier
-        )
+        if (it.isNotEmpty()) {
+            Spacer(modifier = modifier.height(5.dp))
+            ImageAndTextComposable(
+                imageResourceId = R.drawable.x_logo_twitter,
+                text = it
+            )
+        }
     }
 }
 
 @Composable
-fun ImageAndTextComposable(imageResourceId: Int, text: String, modifier: Modifier) {
+fun ImageAndTextComposable(imageResourceId: Int, text: String) {
     Row(
-        modifier = modifier
-            .width(200.dp)
-            .height(20.dp)
+        modifier = Modifier.wrapContentSize()
     ) {
         Image(
             painterResource(id = imageResourceId),
             contentDescription = "profile image",
-            modifier = modifier.fillMaxSize()
+            modifier = Modifier
+                .height(20.dp)
+                .width(20.dp)
         )
-        Spacer(modifier = modifier.width(5.dp))
+        Spacer(modifier = Modifier.width(10.dp))
         Text(
             text = text,
             textAlign = TextAlign.Center,
