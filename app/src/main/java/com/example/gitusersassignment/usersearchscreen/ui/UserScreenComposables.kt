@@ -152,7 +152,7 @@ fun GetUserDetailsComponent(
 fun UserListItem(user: UserViewModel, modifier: Modifier, navController: NavController) {
     Row(modifier = modifier
         .clickable {
-            navController.navigate("User Details")
+            navController.navigate("Users/${user.userName}")
         }
         .fillMaxWidth()
         .height(100.dp)

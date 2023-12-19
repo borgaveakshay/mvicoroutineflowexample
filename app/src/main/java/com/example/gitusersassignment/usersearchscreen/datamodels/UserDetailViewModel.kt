@@ -18,7 +18,8 @@ data class UserDetailViewModel(
     val location: String?,
     val name: String? = "",
     val publicRepos: Int?,
-    val twitterUsername: String?
+    val twitterUsername: String?,
+    val login : String?
 
 ) : Parcelable
 

@@ -83,11 +83,12 @@ fun GetUserDetailResponse.toDetailViewModel(): UserDetailViewModel = UserDetailV
     location = this.location,
     name = this.name,
     publicRepos = this.publicRepos,
-    twitterUsername = this.twitterUsername
+    twitterUsername = this.twitterUsername,
+    login = this.login
 )
 
 fun UserDetailViewModel.toUserViewModel() = UserViewModel(
-    userName = name,
+    userName = login,
     avatarUrl = avatarUrl
 )
 
