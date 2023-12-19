@@ -76,6 +76,7 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.7.6")
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
     kapt("com.google.dagger:hilt-android-compiler:2.49")
     kapt("androidx.hilt:hilt-compiler:1.1.0")

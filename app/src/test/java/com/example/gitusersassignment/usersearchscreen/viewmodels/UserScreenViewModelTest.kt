@@ -14,7 +14,6 @@ import io.mockk.coEvery
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.test.advanceTimeBy
@@ -113,9 +112,9 @@ class UserScreenViewModelTest {
         // After receiving the event it will be first loading the response from network
         // It will then receive an exception from the api.
         assertEquals(
-            UserScreenContract.UserScreenEffects.ErrorEffect(
+            UserScreenContract.GetUsersViewState.Error(
                 expectedError.error
-            ), userViewModel.uiEffect.first()
+            ), userViewModel.uiState.value.usersViewState
         )
 
     }
@@ -191,9 +190,9 @@ class UserScreenViewModelTest {
             // After receiving the event it will be first loading the response from network
             // It will then receive an exception from the api.
             assertEquals(
-                UserScreenContract.UserScreenEffects.ErrorEffect(
+                UserScreenContract.GetUserDetailViewState.Error(
                     expectedError.error
-                ), userViewModel.uiEffect.first()
+                ), userViewModel.uiState.value.userDetailViewState
             )
 
         }

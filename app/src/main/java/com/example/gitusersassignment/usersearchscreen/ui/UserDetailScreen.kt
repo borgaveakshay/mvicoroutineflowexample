@@ -113,18 +113,23 @@ fun ProfileDetails(userDetailViewModel: UserDetailViewModel, modifier: Modifier)
         fontStyle = FontStyle.Italic,
         textAlign = TextAlign.Center
     )
-    Spacer(modifier = modifier.height(5.dp))
-    ImageAndTextComposable(
-        imageResourceId = R.drawable.location_icon,
-        text = userDetailViewModel.location,
-        modifier = modifier
-    )
-    Spacer(modifier = modifier.height(5.dp))
-    ImageAndTextComposable(
-        imageResourceId = R.drawable.x_logo_twitter,
-        text = userDetailViewModel.twitterUsername,
-        modifier = modifier
-    )
+
+    userDetailViewModel.location?.let {
+        Spacer(modifier = modifier.height(5.dp))
+        ImageAndTextComposable(
+            imageResourceId = R.drawable.location_icon,
+            text = it,
+            modifier = modifier
+        )
+    }
+    userDetailViewModel.twitterUsername?.let {
+        Spacer(modifier = modifier.height(5.dp))
+        ImageAndTextComposable(
+            imageResourceId = R.drawable.x_logo_twitter,
+            text = it,
+            modifier = modifier
+        )
+    }
 }
 
 @Composable

@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -34,6 +35,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil.compose.SubcomposeAsyncImage
 import com.example.gitusersassignment.R
+import com.example.gitusersassignment.base.mvi.useDebounce
 import com.example.gitusersassignment.usersearchscreen.contracts.UserScreenContract
 import com.example.gitusersassignment.usersearchscreen.datamodels.UserViewModel
 import com.example.gitusersassignment.usersearchscreen.responsemodel.userdetail.toUserViewModel
@@ -44,7 +46,6 @@ fun UserScreenComponent(
     viewModel: UserScreenViewModel = hiltViewModel(),
     navController: NavController
 ) {
-    val searchTextState = remember { mutableStateOf(value = "") }
     val userScreenState by viewModel.uiState.collectAsStateWithLifecycle()
     if (userScreenState.usersViewState is UserScreenContract.GetUsersViewState.Idle)
         viewModel.setEvent(UserScreenContract.UserScreenEvent.GetUsersList)
@@ -54,27 +55,28 @@ fun UserScreenComponent(
     Surface(
         modifier = modifier,
     ) {
+        var searchText by remember {
+            mutableStateOf("")
+        }
         Column {
-            SearchComponent(searchTextState.value) { newSearchText ->
-                searchTextState.value = newSearchText
-                when {
-                    newSearchText.length > 1 -> {
-                        viewModel.setEvent(
-                            UserScreenContract.UserScreenEvent.GetUserDetails(
-                                newSearchText
-                            )
-                        )
-                    }
+            SearchComponent {
+                searchText = it
+                if (it.length > 2) {
+                    viewModel.setEvent(UserScreenContract.UserScreenEvent.GetUserDetails(it))
                 }
             }
-            if (searchTextState.value.isEmpty())
-                UserListComponent(usersViewState = userScreenState.usersViewState, navController)
-            else
-                GetUserDetailsComponent(
+            when {
+                searchText.isEmpty() -> UserListComponent(
+                    usersViewState = userScreenState.usersViewState,
+                    navController
+                )
+
+                else -> GetUserDetailsComponent(
                     userDetailViewState = userScreenState.userDetailViewState,
                     modifier = modifier,
                     navController = navController
                 )
+            }
         }
     }
 }
@@ -92,10 +94,15 @@ fun GetUserDetailsComponent(
     ) {
 
         when (userDetailViewState) {
-            is UserScreenContract.GetUserDetailViewState.Error -> LoadingComponent(
-                isLoading = false,
-                modifier = modifier
-            )
+            is UserScreenContract.GetUserDetailViewState.Error -> {
+                LoadingComponent(
+                    isLoading = false,
+                    modifier = modifier
+                )
+                userDetailViewState.exception?.let {
+                    Text(text = "Record not found")
+                }
+            }
 
             UserScreenContract.GetUserDetailViewState.Idle -> LoadingComponent(
                 isLoading = false,
@@ -169,20 +176,23 @@ fun UserListItem(user: UserViewModel, modifier: Modifier, navController: NavCont
 }
 
 @Composable
-fun SearchComponent(searchText: String, onValueChanged: (newValue: String) -> Unit) {
+fun SearchComponent(onValueChanged: (newValue: String) -> Unit) {
+    var searchTextState by remember { mutableStateOf(value = "") }
     Box(
         contentAlignment = Alignment.Center
     ) {
-
         TextField(
-            value = searchText,
-            onValueChange = { onValueChanged(it) },
+            value = searchTextState,
+            onValueChange = { searchTextState = it },
+            maxLines = 1,
+            singleLine = true,
             label = { Text(text = "Search Users") },
             modifier = Modifier
                 .fillMaxWidth()
-                .height(50.dp)
+                .height(60.dp)
 
         )
+        searchTextState.useDebounce(onChange = { onValueChanged(it) }, delayMillis = 1000L)
     }
 }
 

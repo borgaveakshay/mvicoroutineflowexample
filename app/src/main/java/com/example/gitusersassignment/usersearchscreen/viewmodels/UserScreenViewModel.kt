@@ -11,7 +11,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class UserScreenViewModel @Inject constructor(private val userScreenProcessor: UserScreenProcessor) :
-    BaseViewModel<UserScreenContract.UserScreenEvent, UserScreenContract.UserScreenState, UserScreenContract.UserScreenEffects>() {
+    BaseViewModel<UserScreenContract.UserScreenEvent, UserScreenContract.UserScreenState>() {
 
     override fun createInitialState(): UserScreenContract.UserScreenState =
         UserScreenContract.UserScreenState.initialState
@@ -26,19 +26,13 @@ class UserScreenViewModel @Inject constructor(private val userScreenProcessor: U
 
     private fun handleGetUsersEvent() = viewModelScope.launch {
         userScreenProcessor.getGithubUsers().collect { result ->
-            when (val state = result.toState()) {
-                is UserScreenContract.GetUsersViewState.Error -> setEffect { state.errorEffect!! }
-                else -> setUiState { copy(usersViewState = state) }
-            }
+            setUiState { copy(usersViewState = result.toState()) }
         }
     }
 
     private fun handleGetUserDetails(name: String) = viewModelScope.launch {
         userScreenProcessor.getGithubUserDetails(name).collect { result ->
-            when (val state = result.toState()) {
-                is UserScreenContract.GetUserDetailViewState.Error -> setEffect { state.errorEffect!! }
-                else -> setUiState { copy(userDetailViewState = state) }
-            }
+            setUiState { copy(userDetailViewState = result.toState()) }
         }
     }
 }

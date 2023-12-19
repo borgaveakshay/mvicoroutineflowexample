@@ -5,6 +5,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
@@ -28,9 +29,14 @@ class RetrofitModule {
             val builder = chain.request().newBuilder()
             builder.apply {
                 addHeader("Accept", "application/vnd.github+json")
-                addHeader("auth", "")
+                addHeader("User-Agent", "mvi-coroutine-flow-example")
                 addHeader("X-GitHub-Api-Version", "2022-11-28")
             }
             chain.proceed(builder.build())
-        }.build()
+        }.addInterceptor(HttpLoggingInterceptor().apply {
+            setLevel(HttpLoggingInterceptor.Level.BODY)
+        })
+        .build()
+
+
 }

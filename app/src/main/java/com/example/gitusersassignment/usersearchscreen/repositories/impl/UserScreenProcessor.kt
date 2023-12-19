@@ -1,5 +1,6 @@
 package com.example.gitusersassignment.usersearchscreen.repositories.impl
 
+import android.util.Log
 import com.example.gitusersassignment.base.Result
 import com.example.gitusersassignment.usersearchscreen.api.GithubUsersAPI
 import com.example.gitusersassignment.usersearchscreen.datamodels.UserDetailViewModel
@@ -26,13 +27,15 @@ class UserScreenProcessor @Inject constructor(private val githubUsersAPI: Github
             emit(Result.loading())
         }
 
-    @OptIn(FlowPreview::class)
     override suspend fun getGithubUserDetails(userName: String): Flow<Result<UserDetailViewModel>> =
         flow {
             emit(Result.success(githubUsersAPI.getGithubUserDetails(userName).toDetailViewModel()))
+            Log.d("getGithubUserDetails", "getGithubUserDetails success: $userName")
         }.catch {
+            Log.d("getGithubUserDetails", "getGithubUserDetails error: ${it.message}")
             emit(Result.error(it))
         }.onStart {
+            Log.d("getGithubUserDetails", "getGithubUserDetails loading: $userName")
             emit(Result.loading())
         }
 }
