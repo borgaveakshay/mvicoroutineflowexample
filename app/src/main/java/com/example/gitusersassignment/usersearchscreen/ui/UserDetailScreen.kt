@@ -85,23 +85,23 @@ fun ProfileDetailsStateComposable(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         when (userDetailViewState) {
-            is UserScreenContract.GetUserDetailViewState.Error -> LoadingComponent(
-                isLoading = false,
-                modifier = modifier.align(Alignment.CenterHorizontally)
-            )
-
-            UserScreenContract.GetUserDetailViewState.Loading -> LoadingComponent(
-                isLoading = true,
+            is UserScreenContract.GetUserDetailViewState.Error -> DetailViewRender(
+                loading = false,
+                userDetailViewModel = null,
                 modifier = modifier
             )
 
+
+            UserScreenContract.GetUserDetailViewState.Loading -> DetailViewRender(
+                loading = true,
+                userDetailViewModel = null,
+                modifier = modifier
+            )
+
+
             is UserScreenContract.GetUserDetailViewState.Success -> {
-                LoadingComponent(
-                    isLoading = false,
-                    modifier = modifier
-                )
                 userDetailViewState.userDetailViewModel?.let {
-                    ProfileDetails(userDetailViewModel = it, modifier = modifier)
+                    DetailViewRender(loading = false, userDetailViewModel = it, modifier = modifier)
                 }
             }
 
@@ -110,6 +110,28 @@ fun ProfileDetailsStateComposable(
             }
         }
 
+    }
+
+}
+
+@Composable
+fun DetailViewRender(
+    loading: Boolean,
+    userDetailViewModel: UserDetailViewModel? = null,
+    modifier: Modifier
+) {
+    Spacer(modifier = modifier.height(10.dp))
+    when {
+        loading -> LoadingComponent(
+            isLoading = false,
+            modifier = modifier
+        )
+
+        else -> {
+            userDetailViewModel?.let {
+                ProfileDetails(userDetailViewModel = it, modifier = modifier)
+            }
+        }
     }
 
 }
