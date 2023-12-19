@@ -87,7 +87,7 @@ fun ProfileDetailsStateComposable(
         when (userDetailViewState) {
             is UserScreenContract.GetUserDetailViewState.Error -> LoadingComponent(
                 isLoading = false,
-                modifier = modifier
+                modifier = modifier.align(Alignment.CenterHorizontally)
             )
 
             UserScreenContract.GetUserDetailViewState.Loading -> LoadingComponent(
