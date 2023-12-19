@@ -15,7 +15,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class UserScreenProcessorTest {
 
     @get:Rule
@@ -72,10 +71,10 @@ class UserScreenProcessorTest {
         coEvery { mockGithubUsersAPI.getGithubUserDetails(givenUserParam) } returns UserScreenProcessorMock.getUserDetailResponse()
         // WHEN
         userScreenProcessor.getGithubUserDetails(givenUserParam)
-        advanceTimeBy(1000)
         val result  = userScreenProcessor.getGithubUserDetails(givenUserParam)
         // THEN
         result.test {
+            assertEquals(ResultStatus.Loading, awaitItem().status)
             val resultItem = awaitItem()
             assertEquals(ResultStatus.Success, resultItem.status)
             assertEquals(UserScreenProcessorMock.getUserDetailModel(), resultItem.data)
@@ -92,8 +91,8 @@ class UserScreenProcessorTest {
         // WHEN
         val result = userScreenProcessor.getGithubUserDetails(givenUserName)
         // THEN
-        advanceTimeBy(1000)
         result.test {
+            assertEquals(ResultStatus.Loading, awaitItem().status)
             val resultItem = awaitItem()
             assertEquals(ResultStatus.Error, resultItem.status)
             assertEquals(givenErrorMessage, resultItem.error!!.message)

@@ -111,7 +111,8 @@ object UserScreenProcessorMock {
         location = "India",
         name = "Login user 0",
         publicRepos = 100,
-        twitterUsername = "loginuser0"
+        twitterUsername = "loginuser0",
+        login = "login user 0"
     )
 
 }
