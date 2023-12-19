@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -14,9 +15,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -29,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -98,9 +102,19 @@ fun GetUserDetailsComponent(
                     isLoading = false, modifier = modifier
                 )
                 userDetailViewState.exception?.let {
-                    Text(
-                        text = "Record not found", modifier = modifier
-                    )
+                    Box(
+                        modifier = modifier
+                            .fillMaxWidth()
+                            .height(70.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Spacer(modifier = modifier.height(10.dp))
+                        Text(
+                            text = "Record not found",
+                            modifier = modifier.align(Alignment.Center),
+                            textAlign = TextAlign.Center
+                        )
+                    }
                 }
             }
 
@@ -118,11 +132,15 @@ fun GetUserDetailsComponent(
                 )
                 userDetailViewState.userDetailViewModel?.let { userDetailViewModel ->
                     val userViewModel = userDetailViewModel.toUserViewModel()
-                    Column {
+                    Column(
+                        modifier = modifier
+                            .fillMaxWidth()
+                            .height(80.dp)
+                    ) {
                         UserListItem(
                             user = userViewModel, modifier = modifier, navController = navController
                         )
-                        Divider(thickness = 2.dp)
+                        Divider(thickness = 2.dp, color = MaterialTheme.colorScheme.onSurface)
                     }
                 }
             }
@@ -180,8 +198,8 @@ fun SearchComponent(onValueChanged: (newValue: String) -> Unit) {
             label = { Text(text = "Search Users") },
             modifier = Modifier
                 .fillMaxWidth()
-                .height(60.dp)
-
+                .height(60.dp),
+            shape = RoundedCornerShape(size = 4.dp)
         )
         searchTextState.useDebounce(onChange = { onValueChanged(it) }, delayMillis = 1000L)
     }

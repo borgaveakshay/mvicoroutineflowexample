@@ -34,7 +34,9 @@ import com.example.gitusersassignment.usersearchscreen.viewmodels.UserScreenView
 
 @Composable
 fun UserDetailsScreen(
-    userScreenViewModel: UserScreenViewModel = hiltViewModel()
+    userScreenViewModel: UserScreenViewModel = hiltViewModel(),
+    searchQuery: String? = null,
+    userDetailViewModel: UserDetailViewModel? = null
 ) {
     val state by userScreenViewModel.uiState.collectAsStateWithLifecycle()
     val modifier = Modifier

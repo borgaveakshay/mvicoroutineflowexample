@@ -1,9 +1,12 @@
 package com.example.gitusersassignment.usersearchscreen.datamodels
 
+import android.os.Parcelable
 import com.example.gitusersassignment.base.Result
 import com.example.gitusersassignment.base.ResultStatus
 import com.example.gitusersassignment.usersearchscreen.contracts.UserScreenContract
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class UserDetailViewModel(
     val avatarUrl: String? = "",
     val bio: String? = null,
@@ -17,7 +20,7 @@ data class UserDetailViewModel(
     val publicRepos: Int?,
     val twitterUsername: String?
 
-)
+) : Parcelable
 
 fun Result<UserDetailViewModel>.toState(): UserScreenContract.GetUserDetailViewState {
     return when (this.status) {
