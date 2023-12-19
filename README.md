@@ -12,7 +12,8 @@ This application contains following key details
         - The UiEffect caters to all the side effect that a screen would have, for example acting on any api failures and showing a correct message to the user.
 
 
-*Other major details of the application*  
-        - For dependency injection hilt library is used.
-        - In App for UI Jetpack compose is used along with Jetpack compose navigation library.
-        - For the background tasks Kotlin Coroutines with flow is used as it is better integrated with the jetpack compose.
+*Other major details of the application*
+- For dependency injection hilt library is used.
+- In App for UI Jetpack compose is used along with Jetpack compose navigation library.
+- For the background tasks Kotlin Coroutines with flow is used as it is better integrated with the jetpack compose.
+
