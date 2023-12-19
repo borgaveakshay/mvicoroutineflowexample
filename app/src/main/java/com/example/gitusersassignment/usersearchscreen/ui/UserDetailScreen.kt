@@ -108,7 +108,7 @@ fun ProfileDetails(userDetailViewModel: UserDetailViewModel, modifier: Modifier)
     }
     Spacer(modifier = modifier.height(10.dp))
     Text(
-        text = userDetailViewModel.name,
+        text = userDetailViewModel.name ?: "",
         fontSize = 20.sp,
         fontStyle = FontStyle.Italic,
         textAlign = TextAlign.Center

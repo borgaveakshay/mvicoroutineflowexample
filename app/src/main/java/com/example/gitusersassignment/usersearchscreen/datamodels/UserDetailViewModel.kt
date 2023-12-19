@@ -5,15 +5,15 @@ import com.example.gitusersassignment.base.ResultStatus
 import com.example.gitusersassignment.usersearchscreen.contracts.UserScreenContract
 
 data class UserDetailViewModel(
-    val avatarUrl: String = "",
+    val avatarUrl: String? = "",
     val bio: String? = null,
     val blog: String?,
-    val company: String = "",
+    val company: String? = "",
     val email: String? = null,
     val followers: Int?,
     val following: Int?,
     val location: String?,
-    val name: String = "",
+    val name: String? = "",
     val publicRepos: Int?,
     val twitterUsername: String?
 

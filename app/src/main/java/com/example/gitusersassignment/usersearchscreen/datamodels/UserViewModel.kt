@@ -4,7 +4,7 @@ import com.example.gitusersassignment.base.Result
 import com.example.gitusersassignment.base.ResultStatus
 import com.example.gitusersassignment.usersearchscreen.contracts.UserScreenContract
 
-data class UserViewModel(val userName: String, val avatarUrl: String?)
+data class UserViewModel(val userName: String?, val avatarUrl: String?)
 
 fun Result<List<UserViewModel>>.toState(): UserScreenContract.GetUsersViewState {
     return when (this.status) {

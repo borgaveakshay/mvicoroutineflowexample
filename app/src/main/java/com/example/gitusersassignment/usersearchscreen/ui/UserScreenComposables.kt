@@ -43,12 +43,12 @@ import com.example.gitusersassignment.usersearchscreen.viewmodels.UserScreenView
 
 @Composable
 fun UserScreenComponent(
-    viewModel: UserScreenViewModel = hiltViewModel(),
-    navController: NavController
+    viewModel: UserScreenViewModel = hiltViewModel(), navController: NavController
 ) {
     val userScreenState by viewModel.uiState.collectAsStateWithLifecycle()
-    if (userScreenState.usersViewState is UserScreenContract.GetUsersViewState.Idle)
-        viewModel.setEvent(UserScreenContract.UserScreenEvent.GetUsersList)
+    if (userScreenState.usersViewState is UserScreenContract.GetUsersViewState.Idle) viewModel.setEvent(
+        UserScreenContract.UserScreenEvent.GetUsersList
+    )
     val modifier = Modifier
         .fillMaxWidth()
         .fillMaxHeight()
@@ -67,8 +67,7 @@ fun UserScreenComponent(
             }
             when {
                 searchText.isEmpty() -> UserListComponent(
-                    usersViewState = userScreenState.usersViewState,
-                    navController
+                    usersViewState = userScreenState.usersViewState, navController
                 )
 
                 else -> GetUserDetailsComponent(
@@ -96,37 +95,34 @@ fun GetUserDetailsComponent(
         when (userDetailViewState) {
             is UserScreenContract.GetUserDetailViewState.Error -> {
                 LoadingComponent(
-                    isLoading = false,
-                    modifier = modifier
+                    isLoading = false, modifier = modifier
                 )
                 userDetailViewState.exception?.let {
-                    Text(text = "Record not found")
+                    Text(
+                        text = "Record not found", modifier = modifier
+                    )
                 }
             }
 
             UserScreenContract.GetUserDetailViewState.Idle -> LoadingComponent(
-                isLoading = false,
-                modifier = modifier
+                isLoading = false, modifier = modifier
             )
 
             UserScreenContract.GetUserDetailViewState.Loading -> LoadingComponent(
-                isLoading = true,
-                modifier = modifier
+                isLoading = true, modifier = modifier
             )
 
             is UserScreenContract.GetUserDetailViewState.Success -> {
                 LoadingComponent(
-                    isLoading = false,
-                    modifier = modifier
+                    isLoading = false, modifier = modifier
                 )
                 userDetailViewState.userDetailViewModel?.let { userDetailViewModel ->
                     val userViewModel = userDetailViewModel.toUserViewModel()
                     Column {
                         UserListItem(
-                            user = userViewModel,
-                            modifier = modifier,
-                            navController = navController
+                            user = userViewModel, modifier = modifier, navController = navController
                         )
+                        Divider(thickness = 2.dp)
                     }
                 }
             }
@@ -136,24 +132,20 @@ fun GetUserDetailsComponent(
 
 @Composable
 fun UserListItem(user: UserViewModel, modifier: Modifier, navController: NavController) {
-    Row(
-        modifier = modifier
-            .clickable {
-                navController.navigate("User Details")
-            }
-            .fillMaxWidth()
-            .height(100.dp)
-            .padding(10.dp)
+    Row(modifier = modifier
+        .clickable {
+            navController.navigate("User Details")
+        }
+        .fillMaxWidth()
+        .height(100.dp)
+        .padding(10.dp)
 
     ) {
         Card(
-            shape = CircleShape,
-            modifier = Modifier
-                .align(Alignment.CenterVertically)
+            shape = CircleShape, modifier = Modifier.align(Alignment.CenterVertically)
 
         ) {
-            SubcomposeAsyncImage(
-                model = user.avatarUrl,
+            SubcomposeAsyncImage(model = user.avatarUrl,
                 contentDescription = "user avatar",
                 modifier = Modifier
                     .height(50.dp)
@@ -163,11 +155,10 @@ fun UserListItem(user: UserViewModel, modifier: Modifier, navController: NavCont
                         painter = painterResource(id = R.drawable.profile_icon_placeholder),
                         contentDescription = "loading placeholder"
                     )
-                }
-            )
+                })
         }
         Text(
-            text = user.userName,
+            text = user.userName ?: "",
             modifier = Modifier
                 .align(Alignment.CenterVertically)
                 .padding(start = 30.dp)
@@ -198,8 +189,7 @@ fun SearchComponent(onValueChanged: (newValue: String) -> Unit) {
 
 @Composable
 fun UserListComponent(
-    usersViewState: UserScreenContract.GetUsersViewState,
-    navController: NavController
+    usersViewState: UserScreenContract.GetUsersViewState, navController: NavController
 ) {
     val modifier = Modifier
         .fillMaxWidth()
